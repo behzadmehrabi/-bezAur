@@ -1,8 +1,8 @@
 import os
 
+
 import appdirs
 from cachelib import FileSystemCache, NullCache
-from termcolor import colored
 
 
 CACHE_DIR = appdirs.user_cache_dir("bez", "behzad")
@@ -21,11 +21,3 @@ def _clear_cache():
         cache = FileSystemCache(CACHE_DIR, CACHE_ENTRY_MAX, default_timeout=0)
     return cache.clear()
 
-def _cyan(text):
-    return  colored(text, "cyan")
-
-def _bcyan(text):
-    return colored(text, 'cyan', attrs=['bold'])
-
-def _yellow(text):
-    return colored(text, 'yellow')
