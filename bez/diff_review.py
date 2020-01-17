@@ -14,6 +14,7 @@ class DiffReview:
     def __init__(self, selected_pkg, args):
         self.args = args
         self.name = selected_pkg['name']
+        self.version = selected_pkg['version']
 
         self.base_url = 'https://aur.archlinux.org'
         self.cache_key = 'diff{}{}'.format(self.name, selected_pkg['version'])
@@ -81,9 +82,13 @@ class DiffReview:
     def _show_diff(self):
         first = utils.abs_path('/tmp/bezaur/aur-4369b2d562ca5a526c9e5d96df5949cb51f9cd6f/')
         second = utils.abs_path('/tmp/bezaur/aur-f380837df5229c7196d7d9805b06795033b1f5cf')
-        with open('diffreview.txt', 'w+') as f:
-            for file1, file2 in zip(first, second):
-                subprocess.call(['diff', file1, file2, '--color=always', '--unified'], stdout=f)
-                subprocess.call(['echo', '\n'], stdout=f)
-            subprocess.call(['less', 'diffreview.txt'])
+
+        diff_file = '/tmp/bezaur/{}{}diffreview.txt'.format(self.name, self.version)
+        return_code = subprocess.call(['less', diff_file])
+        if return_code != 0:
+            with open(diff_file, 'w+') as f:
+                for file1, file2 in zip(first, second):
+                    subprocess.call(['diff', file1, file2, '--color=always', '--unified'], stdout=f)
+                    subprocess.call(['echo', '\n'], stdout=f)
+                subprocess.call(['less', diff_file])
 
