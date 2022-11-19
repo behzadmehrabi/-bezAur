@@ -77,7 +77,26 @@ class DiffReview:
     
     def _extract_tarball(self, tar):
         with tarfile.open(tar, "r:gz") as tf:
-             a = tf.extractall(path='/tmp/bezaur/')
+                 def is_within_directory(directory, target):
+                     
+                     abs_directory = os.path.abspath(directory)
+                     abs_target = os.path.abspath(target)
+                 
+                     prefix = os.path.commonprefix([abs_directory, abs_target])
+                     
+                     return prefix == abs_directory
+                 
+                 def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+                 
+                     for member in tar.getmembers():
+                         member_path = os.path.join(path, member.name)
+                         if not is_within_directory(path, member_path):
+                             raise Exception("Attempted Path Traversal in Tar File")
+                 
+                     tar.extractall(path, members, numeric_owner=numeric_owner) 
+                     
+                 
+                 safe_extract(tf, path="/tmp/bezaur/")
 
     def _show_diff(self):
         first = utils.abs_path('/tmp/bezaur/aur-4369b2d562ca5a526c9e5d96df5949cb51f9cd6f/')
